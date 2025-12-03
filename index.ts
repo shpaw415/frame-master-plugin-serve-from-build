@@ -1,5 +1,6 @@
 import type { FrameMasterPlugin } from "frame-master/plugin/types";
 import { join } from "path";
+import { version, name } from "./package.json";
 
 export type serveFromBuildOptions = {
   /**
@@ -43,9 +44,8 @@ export default function servefrombuild(
   options: serveFromBuildOptions
 ): FrameMasterPlugin {
   return {
-    name: "serve-from-build",
-    version: "0.1.0",
-
+    name,
+    version,
     router: {
       request: async (master) => {
         const filePath = buildedFiles.find((out) => {
