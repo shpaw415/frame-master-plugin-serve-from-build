@@ -1,13 +1,13 @@
 {
-  "name": "frame-master-plugin-serve-from-build",
-  "version": "0.2.0",
-  "type": "module",
-  "main": "index.ts",
-  "peerDependencies": {
-    "frame-master": "^2.0.5",
-    "typescript": "^5"
-  },
-  "devDependencies": {
-    "@types/bun": "latest"
-  }
+	"name": "frame-master-plugin-serve-from-build",
+	"version": "1.0.0",
+	"type": "module",
+	"main": "index.ts",
+	"peerDependencies": {
+		"frame-master": "https://github.com/shpaw415/frame-master#features/on-ready-hook",
+		"typescript": "^5.9.3"
+	},
+	"devDependencies": {
+		"@types/bun": "latest"
+	}
 }

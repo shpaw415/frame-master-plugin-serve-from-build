@@ -1,18 +1,19 @@
 import type { FrameMasterPlugin } from "frame-master/plugin/types";
 import { join } from "path";
 import { version, name } from "./package.json";
+import { getBuilder } from "frame-master/build";
 
 export type serveFromBuildOptions = {
-  /**
-   * The directory where your build outputs are located
-   */
-  buildDir: string;
-  /**
-   * Optional: Files to try when a directory is requested
-   *
-   * e.g., requesting "/about" will try "/about/index.html"
-   * @example: ["index.html", "index.js"] // would fit `/path` => `/path/index.html` | `/path/index.js`   */
-  plainURLPaths?: Array<string>;
+	/**
+	 * The directory where your build outputs are located
+	 */
+	buildDir: string;
+	/**
+	 * Optional: Files to try when a directory is requested
+	 *
+	 * e.g., requesting "/about" will try "/about/index.html"
+	 * @example: ["index.html", "index.js"] // would fit `/path` => `/path/index.html` | `/path/index.js`   */
+	plainURLPaths?: Array<string>;
 };
 
 const cwd = process.cwd();
@@ -20,19 +21,32 @@ const cwd = process.cwd();
 let buildedFiles: Array<string> = [];
 
 function setBuildedFiles(outDir?: string) {
-  if (!outDir)
-    throw new Error(
-      "No build directory specified please specify a 'buildDir' in the plugin options"
-    );
-  buildedFiles = Array.from(
-    new Bun.Glob("**").scanSync({
-      cwd: outDir,
-      absolute: true,
-      onlyFiles: true,
-      dot: true,
-      followSymlinks: false,
-    })
-  );
+	if (!outDir)
+		throw new Error(
+			"No build directory specified please specify a 'buildDir' in the plugin options",
+		);
+	buildedFiles = Array.from(
+		new Bun.Glob("**").scanSync({
+			cwd: outDir,
+			absolute: true,
+			onlyFiles: true,
+			dot: true,
+			followSymlinks: false,
+		}),
+	);
+}
+
+function setBuildedFilesFromBuild(
+	config: Bun.BuildConfig,
+	outputs: Bun.BuildOutput,
+) {
+	if (!outputs)
+		throw new Error(
+			"No build directory specified please specify a 'buildDir' in the plugin options",
+		);
+	const buildDir = join(cwd, config.outdir as string);
+	buildedFiles = outputs.outputs.map((out) => out.path.replace(buildDir, ""));
+	console.log("Builded files:", buildedFiles);
 }
 
 /**
@@ -41,46 +55,47 @@ function setBuildedFiles(outDir?: string) {
  * Description: Simply serves files from the build outputs.
  */
 export default function servefrombuild(
-  options: serveFromBuildOptions
+	options: serveFromBuildOptions,
 ): FrameMasterPlugin {
-  return {
-    name,
-    version,
-    router: {
-      request: async (master) => {
-        const filePath = buildedFiles.find((out) => {
-          if (out === join(cwd, options.buildDir, master.URL.pathname))
-            return true;
-          if (!options.plainURLPaths) return false;
-          for (const plainPath of options.plainURLPaths) {
-            if (
-              out ===
-              join(cwd, options.buildDir, master.URL.pathname, plainPath)
-            )
-              return true;
-          }
-          return false;
-        });
-        if (!filePath) return;
-        master.setResponse(Bun.file(filePath)).sendNow();
-      },
-    },
+	return {
+		name,
+		version,
+		router: {
+			request: async (master) => {
+				const filePath = buildedFiles.find((out) => {
+					if (out === master.URL.pathname) return true;
+					if (
+						options.plainURLPaths?.find(
+							(plainPath) => join(master.URL.pathname, plainPath) === out,
+						)
+					)
+						return true;
+					return false;
+				});
+				if (!filePath) return;
 
-    build: {
-      afterBuild() {
-        setBuildedFiles(options?.buildDir);
-      },
-    },
+				master
+					.setResponse(
+						Bun.file(
+							join(getBuilder()?.getConfig()?.outdir as string, filePath),
+						),
+					)
+					.sendNow();
+			},
+		},
 
-    serverStart: {
-      main() {
-        setBuildedFiles(options?.buildDir);
-      },
-    },
+		build: {
+			afterBuild(config, outputs) {
+				setBuildedFilesFromBuild(config, outputs);
+			},
+		},
+		async serverReady(params) {
+			await params.builder.build();
+		},
 
-    requirement: {
-      frameMasterVersion: ">=2.1.0",
-      bunVersion: ">=1.3.0",
-    },
-  };
+		requirement: {
+			frameMasterVersion: ">=2.1.0",
+			bunVersion: ">=1.3.0",
+		},
+	};
 }
