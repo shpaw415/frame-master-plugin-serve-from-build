@@ -1,7 +1,7 @@
-import type { FrameMasterPlugin } from "frame-master/plugin/types";
-import { join } from "path";
-import { version, name } from "./package.json";
+import { join } from "node:path";
 import { getBuilder } from "frame-master/build";
+import type { FrameMasterPlugin } from "frame-master/plugin/types";
+import { name, version } from "./package.json";
 
 export type serveFromBuildOptions = {
 	/**
@@ -19,22 +19,6 @@ export type serveFromBuildOptions = {
 const cwd = process.cwd();
 
 let buildedFiles: Array<string> = [];
-
-function setBuildedFiles(outDir?: string) {
-	if (!outDir)
-		throw new Error(
-			"No build directory specified please specify a 'buildDir' in the plugin options",
-		);
-	buildedFiles = Array.from(
-		new Bun.Glob("**").scanSync({
-			cwd: outDir,
-			absolute: true,
-			onlyFiles: true,
-			dot: true,
-			followSymlinks: false,
-		}),
-	);
-}
 
 function setBuildedFilesFromBuild(
 	config: Bun.BuildConfig,
@@ -88,9 +72,6 @@ export default function servefrombuild(
 			afterBuild(config, outputs) {
 				setBuildedFilesFromBuild(config, outputs);
 			},
-		},
-		async serverReady(params) {
-			await params.builder.build();
 		},
 
 		requirement: {
