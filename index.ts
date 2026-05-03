@@ -77,6 +77,7 @@ export default function servefrombuild(
 			async dev_main() {
 				if (!options.buildOnDevStart) return;
 				const builder = getBuilder();
+				if (builder?.isBuilding()) return;
 				await builder?.build();
 			},
 		},
