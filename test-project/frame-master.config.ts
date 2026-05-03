@@ -1,4 +1,5 @@
 import type { FrameMasterConfig } from "frame-master/server/types";
+import { getBuilder } from "frame-master/build";
 import servefrombuild from "from-build";
 
 export default {
@@ -15,6 +16,16 @@ export default {
 		servefrombuild({
 			buildDir: ".frame-master/build",
 			plainURLPaths: ["index.html"],
-		}),
+			buildOnDevStart: true,
+		}) as FrameMasterConfig["plugins"][number],
+		{
+			name: "test-plugin",
+			version: "1.0.0",
+			serverStart: {
+				async dev_main() {
+					await getBuilder()?.build();
+				},
+			},
+		},
 	],
 } satisfies FrameMasterConfig;

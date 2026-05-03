@@ -6,7 +6,7 @@
       "name": "test-project",
       "dependencies": {
         "frame-master": "3.1.2",
-        "from-build": "https://github.com/shpaw415/frame-master-plugin-serve-from-build.git#1.0.0",
+        "from-build": "../",
       },
       "devDependencies": {
         "@types/bun": "latest",
@@ -37,7 +37,7 @@
 
     "frame-master": ["frame-master@3.1.2", "", { "dependencies": { "@shpaw415/webtoken": "^2.0.0", "@types/git": "^0.0.21", "chalk": "^5.6.2", "commander": "^14.0.2", "git": "^0.1.5", "react": "^19.2.3", "react-dom": "^19.2.3", "tar": "^7.5.2" }, "peerDependencies": { "typescript": "^6.0.3" }, "bin": { "frame-master": "bin/index.ts" } }, "sha512-nlHQohgPzqpvBK/YLP+LUYGIXq4qlB7IgQUG6Jdhc1svO1mklKNmGkynBoIIfbkDeYfwRCu8KAz4ZBqOftd2ew=="],
 
-    "from-build": ["frame-master-plugin-serve-from-build@github:shpaw415/frame-master-plugin-serve-from-build#6592509", { "peerDependencies": { "frame-master": "https://github.com/shpaw415/frame-master#features/on-ready-hook", "typescript": "^5.9.3" } }, "shpaw415-frame-master-plugin-serve-from-build-6592509", "sha512-bnWRaROTkDZKOMRtR8tJrT3mty1r9M2yOFkPTjdL8FBzmL/mMjANGcKzEzUbsNvViV0xt4S4d2xri7ks/kfZsA=="],
+    "from-build": ["frame-master-plugin-serve-from-build@file:..", { "devDependencies": { "@types/bun": "latest" }, "peerDependencies": { "frame-master": "^3.1.1", "typescript": "^5.9.3" } }],
 
     "git": ["git@0.1.5", "", { "dependencies": { "mime": "1.2.9" } }, "sha512-N+bfOrXyKMU/fQtCj6D/U9MQOEN0DAA8TLHSLdUQRSWBOkeRvsjJHdrdkvcq05xO7GSDKWc3nDEGoTZ4DfCCSg=="],
 
@@ -60,5 +60,9 @@
     "undici-types": ["undici-types@7.16.0", "", {}, "sha512-Zz+aZWSj8LE6zoxD+xrjh4VfkIG8Ya6LvYkZqtUQGJPZjYl53ypCaUwWqo7eI0x66KBGeRo+mlBEkMSeSZ38Nw=="],
 
     "yallist": ["yallist@5.0.0", "", {}, "sha512-YgvUTfwqyc7UXVMrB+SImsVYSmTS8X/tSrtdNZMImM+n7+QTriRXyXim0mBrTXNeqzVF0KWGgHPeiyViFFrNDw=="],
+
+    "from-build/@types/bun": ["@types/bun@1.3.13", "", { "dependencies": { "bun-types": "1.3.13" } }, "sha512-9fqXWk5YIHGGnUau9TEi+qdlTYDAnOj+xLCmSTwXfAIqXr2x4tytJb43E9uCvt09zJURKXwAtkoH4nLQfzeTXw=="],
+
+    "from-build/@types/bun/bun-types": ["bun-types@1.3.13", "", { "dependencies": { "@types/node": "*" } }, "sha512-QXKeHLlOLqQX9LgYaHJfzdBaV21T63HhFJnvuRCcjZiaUDpbs5ED1MgxbMra71CsryN/1dAoXuJJJwIv/2drVA=="],
   }
 }

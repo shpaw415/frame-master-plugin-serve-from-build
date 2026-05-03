@@ -1,6 +1,6 @@
 {
 	"name": "frame-master-plugin-serve-from-build",
-	"version": "1.0.0",
+	"version": "1.1.0",
 	"type": "module",
 	"main": "index.ts",
 	"peerDependencies": {

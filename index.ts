@@ -1,6 +1,6 @@
 import { join } from "node:path";
-import { getBuilder } from "frame-master/build";
 import type { FrameMasterPlugin } from "frame-master/plugin/types";
+import { getBuilder } from "frame-master/build";
 import { name, version } from "./package.json";
 
 export type serveFromBuildOptions = {
@@ -8,6 +8,10 @@ export type serveFromBuildOptions = {
 	 * The directory where your build outputs are located
 	 */
 	buildDir: string;
+	/**
+	 * Optional: Build on dev Server start triggering a quick build to populate the build outputs before the first request
+	 */
+	buildOnDevStart?: boolean;
 	/**
 	 * Optional: Files to try when a directory is requested
 	 *
@@ -30,7 +34,6 @@ function setBuildedFilesFromBuild(
 		);
 	const buildDir = join(cwd, config.outdir as string);
 	buildedFiles = outputs.outputs.map((out) => out.path.replace(buildDir, ""));
-	console.log("Builded files:", buildedFiles);
 }
 
 /**
@@ -59,11 +62,7 @@ export default function servefrombuild(
 				if (!filePath) return;
 
 				master
-					.setResponse(
-						Bun.file(
-							join(getBuilder()?.getConfig()?.outdir as string, filePath),
-						),
-					)
+					.setResponse(Bun.file(join(options.buildDir, filePath)))
 					.sendNow();
 			},
 		},
@@ -74,8 +73,16 @@ export default function servefrombuild(
 			},
 		},
 
+		serverStart: {
+			async dev_main() {
+				if (!options.buildOnDevStart) return;
+				const builder = getBuilder();
+				await builder?.build();
+			},
+		},
+
 		requirement: {
-			frameMasterVersion: ">=2.1.0",
+			frameMasterVersion: ">=3.0.0",
 			bunVersion: ">=1.3.0",
 		},
 	};

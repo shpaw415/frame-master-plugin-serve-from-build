@@ -11,7 +11,7 @@
 	},
 	"dependencies": {
 		"frame-master": "3.1.2",
-		"from-build": "https://github.com/shpaw415/frame-master-plugin-serve-from-build.git#1.0.0"
+		"from-build": "../"
 	},
 	"scripts": {
 		"dev": "NODE_ENV=development bun --hot frame-master dev",
